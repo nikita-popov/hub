@@ -9,7 +9,7 @@ nodes:
   - filter: "evt.Parsed.message contains 'request for' && evt.Parsed.message contains 'forwarded for' && evt.Parsed.message contains 'using'"
     grok:
       pattern: "%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] %{WORD:http_method} request for '%{DATA:http_path}' received from %{IP:src_ip} %{DATA} '%{IP:real_ip}' using '%{DATA:useragent_raw}'"
-      apply_on: message
+      expression: "evt.Parsed.message"
     statics:
       - meta: log_type
         value: http_request
@@ -22,7 +22,7 @@ nodes:
   - filter: "evt.Parsed.message contains 'request for' && evt.Parsed.message contains 'forwarded for' && !(evt.Parsed.message contains 'using')"
     grok:
       pattern: "%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] %{WORD:http_method} request for '%{DATA:http_path}' received from %{IP:src_ip} %{DATA} '%{IP:real_ip}'"
-      apply_on: message
+      expression: "evt.Parsed.message"
     statics:
       - meta: log_type
         value: http_request
@@ -33,7 +33,7 @@ nodes:
   - filter: "evt.Parsed.message contains 'request for' && !(evt.Parsed.message contains 'forwarded for') && evt.Parsed.message contains 'using'"
     grok:
       pattern: "%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] %{WORD:http_method} request for '%{DATA:http_path}' received from %{IP:src_ip} using '%{DATA:useragent_raw}'"
-      apply_on: message
+      expression: "evt.Parsed.message"
     statics:
       - meta: log_type
         value: http_request
@@ -46,7 +46,7 @@ nodes:
   - filter: "evt.Parsed.message contains 'request for' && !(evt.Parsed.message contains 'forwarded for') && !(evt.Parsed.message contains 'using')"
     grok:
       pattern: "%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] %{WORD:http_method} request for '%{DATA:http_path}' received from %{IP:src_ip}"
-      apply_on: message
+      expression: "evt.Parsed.message"
     statics:
       - meta: log_type
         value: http_request
@@ -57,7 +57,7 @@ nodes:
   - filter: "evt.Parsed.message contains 'denied for'"
     grok:
       pattern: "%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] Access to '%{DATA:http_path}' denied for %{GREEDYDATA:auth_user}"
-      apply_on: message
+      expression: "evt.Parsed.message"
     statics:
       - meta: log_type
         value: http_denied
@@ -66,7 +66,7 @@ nodes:
   - filter: "evt.Parsed.message contains 'response status'"
     grok:
       pattern: "%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] %{WORD:http_method} response status for '%{DATA:http_path}' in %{NUMBER:duration} seconds: %{INT:http_status}"
-      apply_on: message
+      expression: "evt.Parsed.message"
     statics:
       - meta: log_type
         value: http_response
