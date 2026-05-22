@@ -1,0 +1,19 @@
+May 20 17:13:37 hostname radicale[1909451]: [1909451/Thread-349 (process_request_thread)] [INFO] GET request for '/wp-wordfence-waf.php' received from 10.54.1.1 (forwarded for '4.241.228.159')
+May 20 17:13:37 hostname radicale[1909451]: [1909451/Thread-349 (process_request_thread)] [INFO] Access to '/wp-wordfence-waf.php' denied for anonymous user
+May 20 17:13:37 hostname radicale[1909451]: [1909451/Thread-349 (process_request_thread)] [INFO] GET response status for '/wp-wordfence-waf.php' in 0.001 seconds: 401 Unauthorized
+
+May 20 17:13:38 hostname radicale[1909451]: [1909451/Thread-350 (process_request_thread)] [INFO] GET request for '/ws49.php' received from 10.54.1.1 (forwarded for '4.241.228.159')
+May 20 17:13:38 hostname radicale[1909451]: [1909451/Thread-350 (process_request_thread)] [INFO] Access to '/ws49.php' denied for anonymous user
+May 20 17:13:38 hostname radicale[1909451]: [1909451/Thread-350 (process_request_thread)] [INFO] GET response status for '/ws49.php' in 0.001 seconds: 401 Unauthorized
+
+May 20 17:13:38 hostname radicale[1909451]: [1909451/Thread-351 (process_request_thread)] [INFO] GET request for '/xxx.php' received from 10.54.1.1 (forwarded for '4.241.228.159')
+May 20 17:13:38 hostname radicale[1909451]: [1909451/Thread-351 (process_request_thread)] [INFO] Access to '/xxx.php' denied for anonymous user
+May 20 17:13:38 hostname radicale[1909451]: [1909451/Thread-351 (process_request_thread)] [INFO] GET response status for '/xxx.php' in 0.001 seconds: 401 Unauthorized
+
+Apr 26 11:04:30 hostname radicale[3970051]: [3970051/Thread-76 (process_request_thread)] [INFO] GET request for '/sitemap.xml' received from 10.54.1.1 (forwarded for '106.63.26.156') using 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0'
+Apr 26 11:04:30 hostname radicale[3970051]: [3970051/Thread-76 (process_request_thread)] [INFO] Access to '/sitemap.xml' denied for anonymous user
+Apr 26 11:04:30 hostname radicale[3970051]: [3970051/Thread-76 (process_request_thread)] [INFO] GET response status for '/sitemap.xml' in 0.001 seconds: 401 Unauthorized
+
+Apr 26 11:04:24 hostname radicale[3970051]: [3970051/Thread-75 (process_request_thread)] [INFO] GET request for '/robots.txt' received from 10.54.1.1 (forwarded for '106.63.26.20') using 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0'
+Apr 26 11:04:24 hostname radicale[3970051]: [3970051/Thread-75 (process_request_thread)] [INFO] Access to '/robots.txt' denied for anonymous user
+Apr 26 11:04:24 hostname radicale[3970051]: [3970051/Thread-75 (process_request_thread)] [INFO] GET response status for '/robots.txt' in 0.001 seconds: 401 Unauthorized
