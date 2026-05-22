@@ -8,7 +8,7 @@ nodes:
   # Proxied request with User-Agent (most specific first)
   - filter: "evt.Parsed.message contains 'request for' && evt.Parsed.message contains 'forwarded for' && evt.Parsed.message contains 'using'"
     grok:
-      pattern: "%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] %{WORD:http_method} request for '%{DATA:http_path}' received from %{IP:src_ip} %{DATA} '%{IP:real_ip}' using '%{DATA:useragent_raw}'"
+      pattern: "%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] %{WORD:http_method} request for '%{DATA:http_path}' received from %{IP:src_ip} \\(forwarded for '%{IP:real_ip}'\\) using '%{DATA:useragent_raw}'"
       expression: "evt.Parsed.message"
     statics:
       - meta: log_type
@@ -21,7 +21,7 @@ nodes:
   # Proxied request without User-Agent
   - filter: "evt.Parsed.message contains 'request for' && evt.Parsed.message contains 'forwarded for' && !(evt.Parsed.message contains 'using')"
     grok:
-      pattern: "%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] %{WORD:http_method} request for '%{DATA:http_path}' received from %{IP:src_ip} %{DATA} '%{IP:real_ip}'"
+      pattern: "%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] %{WORD:http_method} request for '%{DATA:http_path}' received from %{IP:src_ip} \\(forwarded for '%{IP:real_ip}'\\)"
       expression: "evt.Parsed.message"
     statics:
       - meta: log_type
