@@ -1,0 +1,9 @@
+parsers:
+- crowdsecurity/syslog-logs
+- ./parsers/s01-parse/nikita-popov/radicale-logs.yaml
+scenarios:
+- ""
+postoverflows:
+- ""
+log_file: radicale-logs.log
+log_type: syslog
