@@ -1,7 +1,5 @@
 len(results) == 3
 len(results["s01-parse"]["nikita-popov/radicale-logs"]) == 51
-
-# Proxied request without User-Agent
 results["s01-parse"]["nikita-popov/radicale-logs"][0].Success == true
 results["s01-parse"]["nikita-popov/radicale-logs"][0].Evt.Parsed["timestamp"] == "May 20 17:13:37"
 results["s01-parse"]["nikita-popov/radicale-logs"][0].Evt.Parsed["pid"] == "1909451"
@@ -13,15 +11,11 @@ results["s01-parse"]["nikita-popov/radicale-logs"][0].Evt.Meta["service"] == "ra
 results["s01-parse"]["nikita-popov/radicale-logs"][0].Evt.Meta["log_type"] == "http_request"
 results["s01-parse"]["nikita-popov/radicale-logs"][0].Evt.Meta["http_path"] == "/wp-wordfence-waf.php"
 results["s01-parse"]["nikita-popov/radicale-logs"][0].Evt.Meta["source_ip"] == "4.241.228.159"
-
-# Denied line inherits source IP from request stash
 results["s01-parse"]["nikita-popov/radicale-logs"][1].Success == true
 results["s01-parse"]["nikita-popov/radicale-logs"][1].Evt.Parsed["auth_user"] == "anonymous user"
 results["s01-parse"]["nikita-popov/radicale-logs"][1].Evt.Meta["log_type"] == "http_denied"
 results["s01-parse"]["nikita-popov/radicale-logs"][1].Evt.Meta["http_path"] == "/wp-wordfence-waf.php"
 results["s01-parse"]["nikita-popov/radicale-logs"][1].Evt.Meta["source_ip"] == "4.241.228.159"
-
-# 401 response inherits source IP from request stash
 results["s01-parse"]["nikita-popov/radicale-logs"][2].Success == true
 results["s01-parse"]["nikita-popov/radicale-logs"][2].Evt.Parsed["duration"] == "0.001"
 results["s01-parse"]["nikita-popov/radicale-logs"][2].Evt.Parsed["http_method"] == "GET"
@@ -29,8 +23,6 @@ results["s01-parse"]["nikita-popov/radicale-logs"][2].Evt.Parsed["http_status"] 
 results["s01-parse"]["nikita-popov/radicale-logs"][2].Evt.Meta["log_type"] == "http_response"
 results["s01-parse"]["nikita-popov/radicale-logs"][2].Evt.Meta["http_status"] == "401"
 results["s01-parse"]["nikita-popov/radicale-logs"][2].Evt.Meta["source_ip"] == "4.241.228.159"
-
-# Proxied request with User-Agent
 results["s01-parse"]["nikita-popov/radicale-logs"][9].Success == true
 results["s01-parse"]["nikita-popov/radicale-logs"][9].Evt.Parsed["timestamp"] == "Apr 26 11:04:30"
 results["s01-parse"]["nikita-popov/radicale-logs"][9].Evt.Parsed["http_path"] == "/sitemap.xml"
@@ -39,22 +31,16 @@ results["s01-parse"]["nikita-popov/radicale-logs"][9].Evt.Parsed["useragent_raw"
 results["s01-parse"]["nikita-popov/radicale-logs"][9].Evt.Meta["log_type"] == "http_request"
 results["s01-parse"]["nikita-popov/radicale-logs"][9].Evt.Meta["source_ip"] == "106.63.26.156"
 results["s01-parse"]["nikita-popov/radicale-logs"][9].Evt.Meta["useragent"] == "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0"
-
-# Second User-Agent request uses a separate thread/IP
 results["s01-parse"]["nikita-popov/radicale-logs"][12].Success == true
 results["s01-parse"]["nikita-popov/radicale-logs"][12].Evt.Parsed["thread"] == "Thread-75 (process_request_thread)"
 results["s01-parse"]["nikita-popov/radicale-logs"][12].Evt.Parsed["http_path"] == "/robots.txt"
 results["s01-parse"]["nikita-popov/radicale-logs"][12].Evt.Meta["source_ip"] == "106.63.26.20"
 results["s01-parse"]["nikita-popov/radicale-logs"][12].Evt.Meta["useragent"] == "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0"
-
-# Fourth suspicious request fills radicale-scan bucket
 results["s01-parse"]["nikita-popov/radicale-logs"][15].Success == true
 results["s01-parse"]["nikita-popov/radicale-logs"][15].Evt.Parsed["http_path"] == "/wp-login.php"
 results["s01-parse"]["nikita-popov/radicale-logs"][15].Evt.Meta["log_type"] == "http_request"
 results["s01-parse"]["nikita-popov/radicale-logs"][15].Evt.Meta["http_path"] == "/wp-login.php"
 results["s01-parse"]["nikita-popov/radicale-logs"][15].Evt.Meta["source_ip"] == "4.241.228.159"
-
-# Brute-force fixture starts here; source IP must be carried to 401 responses
 results["s01-parse"]["nikita-popov/radicale-logs"][18].Success == true
 results["s01-parse"]["nikita-popov/radicale-logs"][18].Evt.Parsed["timestamp"] == "Jun 01 10:00:00"
 results["s01-parse"]["nikita-popov/radicale-logs"][18].Evt.Parsed["http_path"] == "/caldav/user0/"
@@ -63,8 +49,6 @@ results["s01-parse"]["nikita-popov/radicale-logs"][20].Success == true
 results["s01-parse"]["nikita-popov/radicale-logs"][20].Evt.Parsed["http_status"] == "401"
 results["s01-parse"]["nikita-popov/radicale-logs"][20].Evt.Meta["log_type"] == "http_response"
 results["s01-parse"]["nikita-popov/radicale-logs"][20].Evt.Meta["source_ip"] == "5.5.5.5"
-
-# Last request/response prove the complete 11-event bf fixture is parsed
 results["s01-parse"]["nikita-popov/radicale-logs"][48].Success == true
 results["s01-parse"]["nikita-popov/radicale-logs"][48].Evt.Parsed["thread"] == "Thread-510 (process_request_thread)"
 results["s01-parse"]["nikita-popov/radicale-logs"][48].Evt.Parsed["http_path"] == "/caldav/user10/"
@@ -74,5 +58,4 @@ results["s01-parse"]["nikita-popov/radicale-logs"][50].Success == true
 results["s01-parse"]["nikita-popov/radicale-logs"][50].Evt.Parsed["http_status"] == "401"
 results["s01-parse"]["nikita-popov/radicale-logs"][50].Evt.Meta["log_type"] == "http_response"
 results["s01-parse"]["nikita-popov/radicale-logs"][50].Evt.Meta["source_ip"] == "5.5.5.5"
-
 len(results["success"][""]) == 0
