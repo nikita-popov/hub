@@ -8,4 +8,4 @@ scenarios:
 postoverflows:
 - ""
 log_file: radicale-logs.log
-log_type: syslog
+log_type: radicale
