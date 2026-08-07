@@ -19,7 +19,7 @@ labels:
 
 ```yaml
 ---
-source: journald
+source: journalctl
 journalctl_filter:
   - "_SYSTEMD_UNIT=radicale.service"
 labels:
