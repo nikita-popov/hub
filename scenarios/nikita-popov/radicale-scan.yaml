@@ -12,6 +12,7 @@ groupby: "evt.Meta.source_ip"
 capacity: 3
 leakspeed: "30s"
 blackhole: 10m
+reprocess: true
 labels:
   service: radicale
   type: scan

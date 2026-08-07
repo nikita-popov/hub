@@ -6,6 +6,7 @@ groupby: "evt.Meta.source_ip"
 capacity: 10
 leakspeed: "10s"
 blackhole: 5m
+reprocess: true
 labels:
   service: radicale
   type: bruteforce
