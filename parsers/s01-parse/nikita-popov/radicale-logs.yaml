@@ -10,6 +10,12 @@ nodes:
     grok:
       pattern: "%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] %{WORD:http_method} request for '%{DATA:http_path}' received from %{IP:src_ip} \\(forwarded for '%{IP:real_ip}'\\) using '%{DATA:useragent_raw}'"
       expression: "evt.Parsed.message"
+    stash:
+      - name: radicale_request_ip
+        key: "evt.Parsed.pid + '/' + evt.Parsed.thread"
+        value: evt.Parsed.real_ip
+        ttl: 30s
+        size: 1000
     statics:
       - meta: log_type
         value: http_request
@@ -25,6 +31,12 @@ nodes:
     grok:
       pattern: "%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] %{WORD:http_method} request for '%{DATA:http_path}' received from %{IP:src_ip} \\(forwarded for '%{IP:real_ip}'\\)"
       expression: "evt.Parsed.message"
+    stash:
+      - name: radicale_request_ip
+        key: "evt.Parsed.pid + '/' + evt.Parsed.thread"
+        value: evt.Parsed.real_ip
+        ttl: 30s
+        size: 1000
     statics:
       - meta: log_type
         value: http_request
@@ -38,6 +50,12 @@ nodes:
     grok:
       pattern: "%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] %{WORD:http_method} request for '%{DATA:http_path}' received from %{IP:src_ip} using '%{DATA:useragent_raw}'"
       expression: "evt.Parsed.message"
+    stash:
+      - name: radicale_request_ip
+        key: "evt.Parsed.pid + '/' + evt.Parsed.thread"
+        value: evt.Parsed.src_ip
+        ttl: 30s
+        size: 1000
     statics:
       - meta: log_type
         value: http_request
@@ -53,6 +71,12 @@ nodes:
     grok:
       pattern: "%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] %{WORD:http_method} request for '%{DATA:http_path}' received from %{IP:src_ip}"
       expression: "evt.Parsed.message"
+    stash:
+      - name: radicale_request_ip
+        key: "evt.Parsed.pid + '/' + evt.Parsed.thread"
+        value: evt.Parsed.src_ip
+        ttl: 30s
+        size: 1000
     statics:
       - meta: log_type
         value: http_request
@@ -69,6 +93,10 @@ nodes:
     statics:
       - meta: log_type
         value: http_denied
+      - meta: http_path
+        expression: evt.Parsed.http_path
+      - meta: source_ip
+        expression: "GetFromStash('radicale_request_ip', evt.Parsed.pid + '/' + evt.Parsed.thread)"
 
   # Response with HTTP status code
   - filter: "evt.Parsed.message contains 'response status'"
@@ -80,6 +108,10 @@ nodes:
         value: http_response
       - meta: http_status
         expression: evt.Parsed.http_status
+      - meta: http_path
+        expression: evt.Parsed.http_path
+      - meta: source_ip
+        expression: "GetFromStash('radicale_request_ip', evt.Parsed.pid + '/' + evt.Parsed.thread)"
 
 statics:
   - meta: service
