@@ -65,3 +65,7 @@ Jun 01 10:00:00 hostname radicale[4000001]: [4000001/Thread-509 (process_request
 Jun 01 10:00:00 hostname radicale[4000001]: [4000001/Thread-510 (process_request_thread)] [INFO] GET request for '/caldav/user10/' received from 10.54.1.1 (forwarded for '5.5.5.5')
 Jun 01 10:00:00 hostname radicale[4000001]: [4000001/Thread-510 (process_request_thread)] [INFO] Access to '/caldav/user10/' denied for anonymous user
 Jun 01 10:00:00 hostname radicale[4000001]: [4000001/Thread-510 (process_request_thread)] [INFO] GET response status for '/caldav/user10/' in 0.001 seconds: 401 Unauthorized
+
+[4000002/Thread-511 (process_request_thread)] [INFO] GET request for '/caldav/user11/' received from 10.54.1.1 (forwarded for '5.5.5.5')
+[4000002/Thread-511 (process_request_thread)] [INFO] Access to '/caldav/user11/' denied for anonymous user
+[4000002/Thread-511 (process_request_thread)] [INFO] GET response status for '/caldav/user11/' in 0.001 seconds: 401 Unauthorized
