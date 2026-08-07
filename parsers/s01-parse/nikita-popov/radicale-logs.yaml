@@ -5,6 +5,17 @@ author: nikita-popov
 onsuccess: next_stage
 
 nodes:
+  # Extract syslog-style timestamp when present (file acquisition).
+  # Harmless no-op for journald (evt.Time is already set at acquisition).
+  - filter: "1==1"
+    onsuccess: continue
+    grok:
+      pattern: "^%{SYSLOGTIMESTAMP:timestamp}"
+      apply_on: Line.Raw
+    statics:
+      - target: evt.StrTime
+        expression: evt.Parsed.timestamp
+
   # Proxied request with User-Agent (most specific first)
   - filter: "evt.Line.Raw contains 'request for' && evt.Line.Raw contains 'forwarded for' && evt.Line.Raw contains 'using'"
     grok:
