@@ -15,6 +15,8 @@ nodes:
         value: http_request
       - meta: source_ip
         expression: evt.Parsed.real_ip
+      - meta: http_path
+        expression: evt.Parsed.http_path
       - meta: useragent
         expression: evt.Parsed.useragent_raw
 
@@ -28,6 +30,8 @@ nodes:
         value: http_request
       - meta: source_ip
         expression: evt.Parsed.real_ip
+      - meta: http_path
+        expression: evt.Parsed.http_path
 
   # Direct request with User-Agent
   - filter: "evt.Parsed.message contains 'request for' && !(evt.Parsed.message contains 'forwarded for') && evt.Parsed.message contains 'using'"
@@ -39,6 +43,8 @@ nodes:
         value: http_request
       - meta: source_ip
         expression: evt.Parsed.src_ip
+      - meta: http_path
+        expression: evt.Parsed.http_path
       - meta: useragent
         expression: evt.Parsed.useragent_raw
 
@@ -52,6 +58,8 @@ nodes:
         value: http_request
       - meta: source_ip
         expression: evt.Parsed.src_ip
+      - meta: http_path
+        expression: evt.Parsed.http_path
 
   # Access denied
   - filter: "evt.Parsed.message contains 'denied for'"
