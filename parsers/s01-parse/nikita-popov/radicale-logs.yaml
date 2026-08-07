@@ -1,15 +1,15 @@
-filter: "evt.Parsed.program == 'radicale'"
+filter: "evt.Line.Labels.type == 'radicale'"
 name: nikita-popov/radicale-logs
-description: "Parse Radicale CalDAV/CardDAV server logs (syslog)"
+description: "Parse Radicale CalDAV/CardDAV server logs (file or journald)"
 author: nikita-popov
 onsuccess: next_stage
 
 nodes:
   # Proxied request with User-Agent (most specific first)
-  - filter: "evt.Parsed.message contains 'request for' && evt.Parsed.message contains 'forwarded for' && evt.Parsed.message contains 'using'"
+  - filter: "evt.Line.Raw contains 'request for' && evt.Line.Raw contains 'forwarded for' && evt.Line.Raw contains 'using'"
     grok:
       pattern: "%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] %{WORD:http_method} request for '%{DATA:http_path}' received from %{IP:src_ip} \\(forwarded for '%{IP:real_ip}'\\) using '%{DATA:useragent_raw}'"
-      expression: "evt.Parsed.message"
+      apply_on: Line.Raw
     stash:
       - name: radicale_request_ip
         key: "evt.Parsed.pid + '/' + evt.Parsed.thread"
@@ -27,10 +27,10 @@ nodes:
         expression: evt.Parsed.useragent_raw
 
   # Proxied request without User-Agent
-  - filter: "evt.Parsed.message contains 'request for' && evt.Parsed.message contains 'forwarded for' && !(evt.Parsed.message contains 'using')"
+  - filter: "evt.Line.Raw contains 'request for' && evt.Line.Raw contains 'forwarded for' && !(evt.Line.Raw contains 'using')"
     grok:
       pattern: "%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] %{WORD:http_method} request for '%{DATA:http_path}' received from %{IP:src_ip} \\(forwarded for '%{IP:real_ip}'\\)"
-      expression: "evt.Parsed.message"
+      apply_on: Line.Raw
     stash:
       - name: radicale_request_ip
         key: "evt.Parsed.pid + '/' + evt.Parsed.thread"
@@ -46,10 +46,10 @@ nodes:
         expression: evt.Parsed.http_path
 
   # Direct request with User-Agent
-  - filter: "evt.Parsed.message contains 'request for' && !(evt.Parsed.message contains 'forwarded for') && evt.Parsed.message contains 'using'"
+  - filter: "evt.Line.Raw contains 'request for' && !(evt.Line.Raw contains 'forwarded for') && evt.Line.Raw contains 'using'"
     grok:
       pattern: "%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] %{WORD:http_method} request for '%{DATA:http_path}' received from %{IP:src_ip} using '%{DATA:useragent_raw}'"
-      expression: "evt.Parsed.message"
+      apply_on: Line.Raw
     stash:
       - name: radicale_request_ip
         key: "evt.Parsed.pid + '/' + evt.Parsed.thread"
@@ -67,10 +67,10 @@ nodes:
         expression: evt.Parsed.useragent_raw
 
   # Direct request without User-Agent
-  - filter: "evt.Parsed.message contains 'request for' && !(evt.Parsed.message contains 'forwarded for') && !(evt.Parsed.message contains 'using')"
+  - filter: "evt.Line.Raw contains 'request for' && !(evt.Line.Raw contains 'forwarded for') && !(evt.Line.Raw contains 'using')"
     grok:
       pattern: "%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] %{WORD:http_method} request for '%{DATA:http_path}' received from %{IP:src_ip}"
-      expression: "evt.Parsed.message"
+      apply_on: Line.Raw
     stash:
       - name: radicale_request_ip
         key: "evt.Parsed.pid + '/' + evt.Parsed.thread"
@@ -86,10 +86,10 @@ nodes:
         expression: evt.Parsed.http_path
 
   # Access denied
-  - filter: "evt.Parsed.message contains 'denied for'"
+  - filter: "evt.Line.Raw contains 'denied for'"
     grok:
       pattern: "%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] Access to '%{DATA:http_path}' denied for %{GREEDYDATA:auth_user}"
-      expression: "evt.Parsed.message"
+      apply_on: Line.Raw
     statics:
       - meta: log_type
         value: http_denied
@@ -99,10 +99,10 @@ nodes:
         expression: "GetFromStash('radicale_request_ip', evt.Parsed.pid + '/' + evt.Parsed.thread)"
 
   # Response with HTTP status code
-  - filter: "evt.Parsed.message contains 'response status'"
+  - filter: "evt.Line.Raw contains 'response status'"
     grok:
       pattern: "%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] %{WORD:http_method} response status for '%{DATA:http_path}' in %{NUMBER:duration} seconds: %{INT:http_status}"
-      expression: "evt.Parsed.message"
+      apply_on: Line.Raw
     statics:
       - meta: log_type
         value: http_response
@@ -116,5 +116,3 @@ nodes:
 statics:
   - meta: service
     value: radicale
-  - target: evt.StrTime
-    expression: evt.Parsed.timestamp
