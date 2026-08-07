@@ -1,4 +1,4 @@
-len(results) == 3
+len(results) == 4
 len(results["s00-raw"]["crowdsecurity/syslog-logs"]) == 51
 results["s00-raw"]["crowdsecurity/syslog-logs"][0].Success == true
 results["s00-raw"]["crowdsecurity/syslog-logs"][0].Evt.Parsed["logsource"] == "syslog"
