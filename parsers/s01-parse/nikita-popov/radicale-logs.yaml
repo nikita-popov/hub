@@ -5,21 +5,10 @@ author: nikita-popov
 onsuccess: next_stage
 
 nodes:
-  # Extract syslog-style timestamp when present (file acquisition).
-  # Harmless no-op for journald (evt.Time is already set at acquisition).
-  - filter: "1==1"
-    onsuccess: continue
-    grok:
-      pattern: "^%{SYSLOGTIMESTAMP:timestamp}"
-      apply_on: Line.Raw
-    statics:
-      - target: evt.StrTime
-        expression: evt.Parsed.timestamp
-
   # Proxied request with User-Agent (most specific first)
   - filter: "evt.Line.Raw contains 'request for' && evt.Line.Raw contains 'forwarded for' && evt.Line.Raw contains 'using'"
     grok:
-      pattern: "%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] %{WORD:http_method} request for '%{DATA:http_path}' received from %{IP:src_ip} \\(forwarded for '%{IP:real_ip}'\\) using '%{DATA:useragent_raw}'"
+      pattern: "(?:%{SYSLOGTIMESTAMP:timestamp} \\S+ \\S+: )?%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] %{WORD:http_method} request for '%{DATA:http_path}' received from %{IP:src_ip} \\(forwarded for '%{IP:real_ip}'\\) using '%{DATA:useragent_raw}'"
       apply_on: Line.Raw
     stash:
       - name: radicale_request_ip
@@ -40,7 +29,7 @@ nodes:
   # Proxied request without User-Agent
   - filter: "evt.Line.Raw contains 'request for' && evt.Line.Raw contains 'forwarded for' && !(evt.Line.Raw contains 'using')"
     grok:
-      pattern: "%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] %{WORD:http_method} request for '%{DATA:http_path}' received from %{IP:src_ip} \\(forwarded for '%{IP:real_ip}'\\)"
+      pattern: "(?:%{SYSLOGTIMESTAMP:timestamp} \\S+ \\S+: )?%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] %{WORD:http_method} request for '%{DATA:http_path}' received from %{IP:src_ip} \\(forwarded for '%{IP:real_ip}'\\)"
       apply_on: Line.Raw
     stash:
       - name: radicale_request_ip
@@ -59,7 +48,7 @@ nodes:
   # Direct request with User-Agent
   - filter: "evt.Line.Raw contains 'request for' && !(evt.Line.Raw contains 'forwarded for') && evt.Line.Raw contains 'using'"
     grok:
-      pattern: "%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] %{WORD:http_method} request for '%{DATA:http_path}' received from %{IP:src_ip} using '%{DATA:useragent_raw}'"
+      pattern: "(?:%{SYSLOGTIMESTAMP:timestamp} \\S+ \\S+: )?%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] %{WORD:http_method} request for '%{DATA:http_path}' received from %{IP:src_ip} using '%{DATA:useragent_raw}'"
       apply_on: Line.Raw
     stash:
       - name: radicale_request_ip
@@ -80,7 +69,7 @@ nodes:
   # Direct request without User-Agent
   - filter: "evt.Line.Raw contains 'request for' && !(evt.Line.Raw contains 'forwarded for') && !(evt.Line.Raw contains 'using')"
     grok:
-      pattern: "%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] %{WORD:http_method} request for '%{DATA:http_path}' received from %{IP:src_ip}"
+      pattern: "(?:%{SYSLOGTIMESTAMP:timestamp} \\S+ \\S+: )?%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] %{WORD:http_method} request for '%{DATA:http_path}' received from %{IP:src_ip}"
       apply_on: Line.Raw
     stash:
       - name: radicale_request_ip
@@ -99,7 +88,7 @@ nodes:
   # Access denied
   - filter: "evt.Line.Raw contains 'denied for'"
     grok:
-      pattern: "%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] Access to '%{DATA:http_path}' denied for %{GREEDYDATA:auth_user}"
+      pattern: "(?:%{SYSLOGTIMESTAMP:timestamp} \\S+ \\S+: )?%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] Access to '%{DATA:http_path}' denied for %{GREEDYDATA:auth_user}"
       apply_on: Line.Raw
     statics:
       - meta: log_type
@@ -112,7 +101,7 @@ nodes:
   # Response with HTTP status code
   - filter: "evt.Line.Raw contains 'response status'"
     grok:
-      pattern: "%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] %{WORD:http_method} response status for '%{DATA:http_path}' in %{NUMBER:duration} seconds: %{INT:http_status}"
+      pattern: "(?:%{SYSLOGTIMESTAMP:timestamp} \\S+ \\S+: )?%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] %{WORD:http_method} response status for '%{DATA:http_path}' in %{NUMBER:duration} seconds: %{INT:http_status}"
       apply_on: Line.Raw
     statics:
       - meta: log_type
@@ -127,3 +116,5 @@ nodes:
 statics:
   - meta: service
     value: radicale
+  - target: evt.StrTime
+    expression: evt.Parsed.timestamp
