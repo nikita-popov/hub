@@ -1,5 +1,5 @@
 len(results) == 3
-len(results["s00-raw"]["crowdsecurity/syslog-logs"]) == 15
+len(results["s00-raw"]["crowdsecurity/syslog-logs"]) == 51
 results["s00-raw"]["crowdsecurity/syslog-logs"][0].Success == true
 results["s00-raw"]["crowdsecurity/syslog-logs"][0].Evt.Parsed["logsource"] == "syslog"
 results["s00-raw"]["crowdsecurity/syslog-logs"][0].Evt.Parsed["message"] == "[1909451/Thread-349 (process_request_thread)] [INFO] GET request for '/wp-wordfence-waf.php' received from 10.54.1.1 (forwarded for '4.241.228.159')"
@@ -150,7 +150,7 @@ basename(results["s00-raw"]["crowdsecurity/syslog-logs"][14].Evt.Meta["datasourc
 results["s00-raw"]["crowdsecurity/syslog-logs"][14].Evt.Meta["datasource_type"] == "file"
 results["s00-raw"]["crowdsecurity/syslog-logs"][14].Evt.Meta["machine"] == "hostname"
 results["s00-raw"]["crowdsecurity/syslog-logs"][14].Evt.Whitelisted == false
-len(results["s01-parse"]["nikita-popov/radicale-logs"]) == 15
+len(results["s01-parse"]["nikita-popov/radicale-logs"]) == 51
 results["s01-parse"]["nikita-popov/radicale-logs"][0].Success == true
 results["s01-parse"]["nikita-popov/radicale-logs"][0].Evt.Parsed["http_method"] == "GET"
 results["s01-parse"]["nikita-popov/radicale-logs"][0].Evt.Parsed["http_path"] == "/wp-wordfence-waf.php"

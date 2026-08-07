@@ -7,7 +7,7 @@ Includes:
 ## Acquisition template
 
 ```yaml
-***
+---
 source: file
 filenames:
   - /var/log/radicale/radicale.log
@@ -18,7 +18,7 @@ labels:
 **Journald variant (systemd unit `radicale.service`):**
 
 ```yaml
-***
+---
 source: journald
 journalctl_filter:
   - "_SYSTEMD_UNIT=radicale.service"
