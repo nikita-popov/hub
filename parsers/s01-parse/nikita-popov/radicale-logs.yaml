@@ -6,9 +6,10 @@ onsuccess: next_stage
 
 nodes:
   # Proxied request with User-Agent (most specific first)
+  # WebDAV methods (PROPFIND, REPORT, ...) may carry an optional "with depth 'N'" clause
   - filter: "evt.Line.Raw contains 'request for' && evt.Line.Raw contains 'forwarded for' && evt.Line.Raw contains 'using'"
     grok:
-      pattern: "(?:%{SYSLOGTIMESTAMP:timestamp} \\S+ \\S+: )?\\[%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] %{WORD:http_method} request for '%{DATA:http_path}' received from %{IP:src_ip} \\(forwarded for '%{IP:real_ip}'\\) using '%{DATA:useragent_raw}'"
+      pattern: "(?:%{SYSLOGTIMESTAMP:timestamp} \\S+ \\S+: )?\\[%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] %{WORD:http_method} request for '%{DATA:http_path}'(?: with depth '%{DATA:depth}')? received from %{IP:src_ip} \\(forwarded for '%{IP:real_ip}'\\) using '%{DATA:useragent_raw}'"
       apply_on: Line.Raw
     stash:
       - name: radicale_request_ip
@@ -29,7 +30,7 @@ nodes:
   # Proxied request without User-Agent
   - filter: "evt.Line.Raw contains 'request for' && evt.Line.Raw contains 'forwarded for' && !(evt.Line.Raw contains 'using')"
     grok:
-      pattern: "(?:%{SYSLOGTIMESTAMP:timestamp} \\S+ \\S+: )?\\[%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] %{WORD:http_method} request for '%{DATA:http_path}' received from %{IP:src_ip} \\(forwarded for '%{IP:real_ip}'\\)"
+      pattern: "(?:%{SYSLOGTIMESTAMP:timestamp} \\S+ \\S+: )?\\[%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] %{WORD:http_method} request for '%{DATA:http_path}'(?: with depth '%{DATA:depth}')? received from %{IP:src_ip} \\(forwarded for '%{IP:real_ip}'\\)"
       apply_on: Line.Raw
     stash:
       - name: radicale_request_ip
@@ -48,7 +49,7 @@ nodes:
   # Direct request with User-Agent
   - filter: "evt.Line.Raw contains 'request for' && !(evt.Line.Raw contains 'forwarded for') && evt.Line.Raw contains 'using'"
     grok:
-      pattern: "(?:%{SYSLOGTIMESTAMP:timestamp} \\S+ \\S+: )?\\[%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] %{WORD:http_method} request for '%{DATA:http_path}' received from %{IP:src_ip} using '%{DATA:useragent_raw}'"
+      pattern: "(?:%{SYSLOGTIMESTAMP:timestamp} \\S+ \\S+: )?\\[%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] %{WORD:http_method} request for '%{DATA:http_path}'(?: with depth '%{DATA:depth}')? received from %{IP:src_ip} using '%{DATA:useragent_raw}'"
       apply_on: Line.Raw
     stash:
       - name: radicale_request_ip
@@ -69,7 +70,7 @@ nodes:
   # Direct request without User-Agent
   - filter: "evt.Line.Raw contains 'request for' && !(evt.Line.Raw contains 'forwarded for') && !(evt.Line.Raw contains 'using')"
     grok:
-      pattern: "(?:%{SYSLOGTIMESTAMP:timestamp} \\S+ \\S+: )?\\[%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] %{WORD:http_method} request for '%{DATA:http_path}' received from %{IP:src_ip}"
+      pattern: "(?:%{SYSLOGTIMESTAMP:timestamp} \\S+ \\S+: )?\\[%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] %{WORD:http_method} request for '%{DATA:http_path}'(?: with depth '%{DATA:depth}')? received from %{IP:src_ip}"
       apply_on: Line.Raw
     stash:
       - name: radicale_request_ip
@@ -98,10 +99,10 @@ nodes:
       - meta: source_ip
         expression: "GetFromStash('radicale_request_ip', evt.Parsed.pid + '/' + evt.Parsed.thread)"
 
-  # Response with HTTP status code
+  # Response with HTTP status code (WebDAV methods may carry an optional "with depth 'N'" clause)
   - filter: "evt.Line.Raw contains 'response status'"
     grok:
-      pattern: "(?:%{SYSLOGTIMESTAMP:timestamp} \\S+ \\S+: )?\\[%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] %{WORD:http_method} response status for '%{DATA:http_path}' in %{NUMBER:duration} seconds: %{INT:http_status}"
+      pattern: "(?:%{SYSLOGTIMESTAMP:timestamp} \\S+ \\S+: )?\\[%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] %{WORD:http_method} response status for '%{DATA:http_path}'(?: with depth '%{DATA:depth}')? in %{NUMBER:duration} seconds: %{INT:http_status}"
       apply_on: Line.Raw
     statics:
       - meta: log_type
@@ -112,6 +113,28 @@ nodes:
         expression: evt.Parsed.http_path
       - meta: source_ip
         expression: "GetFromStash('radicale_request_ip', evt.Parsed.pid + '/' + evt.Parsed.thread)"
+
+  # Successful login: 'user' (auth_method)
+  - filter: "evt.Line.Raw contains 'Successful login'"
+    grok:
+      pattern: "(?:%{SYSLOGTIMESTAMP:timestamp} \\S+ \\S+: )?\\[%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] Successful login: '%{DATA:auth_user}' \\(%{DATA:auth_method}\\)"
+      apply_on: Line.Raw
+    statics:
+      - meta: log_type
+        value: auth_success
+      - meta: source_ip
+        expression: "GetFromStash('radicale_request_ip', evt.Parsed.pid + '/' + evt.Parsed.thread)"
+
+  # Failed login attempt from IP (forwarded for 'IP'): 'user'
+  - filter: "evt.Line.Raw contains 'Failed login attempt'"
+    grok:
+      pattern: "(?:%{SYSLOGTIMESTAMP:timestamp} \\S+ \\S+: )?\\[%{INT:pid}/%{DATA:thread}\\] \\[%{LOGLEVEL:log_level}\\] Failed login attempt from %{IP:src_ip}(?: \\(forwarded for '%{IP:real_ip}'\\))?: '%{DATA:auth_user}'"
+      apply_on: Line.Raw
+    statics:
+      - meta: log_type
+        value: auth_failed
+      - meta: source_ip
+        expression: "evt.Parsed.real_ip != nil ? evt.Parsed.real_ip : evt.Parsed.src_ip"
 
 statics:
   - meta: service
