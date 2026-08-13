@@ -6,6 +6,8 @@ Includes:
 
 ## Acquisition template
 
+### File
+
 ```yaml
 ---
 source: file
@@ -15,7 +17,7 @@ labels:
   type: radicale
 ```
 
-**Journald variant (systemd unit `radicale.service`):**
+### Journald
 
 ```yaml
 ---

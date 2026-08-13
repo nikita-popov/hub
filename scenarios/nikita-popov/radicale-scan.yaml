@@ -1,5 +1,5 @@
 name: nikita-popov/radicale-scan
-description: "Radicale path scan — non-CalDAV paths probed from single IP"
+description: "Radicale path scan - non-CalDAV paths probed from single IP"
 type: leaky
 filter: >
   evt.Meta.service == 'radicale' &&
